@@ -44,29 +44,34 @@ def generate_launch_description():
     with open(urdf, 'r') as infp:
         robot_description = infp.read()
 
-    start_robot_state_publisher_cmd = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        name='robot_state_publisher',
-        output='screen',
-        parameters=[{'use_sim_time': True,
-                     'robot_description': robot_description}])
+    # start_robot_state_publisher_cmd = Node(
+    #     package='robot_state_publisher',
+    #     executable='robot_state_publisher',
+    #     name='robot_state_publisher',
+    #     output='screen',
+    #     parameters=[{'use_sim_time': True,
+    #                  'robot_description': robot_description}])
 
-    start_gazebo_spawner_cmd = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
-        output='screen',
-        arguments=[
-            '-entity', 'tb3',
-            '-file', sdf,
-            '-x', '5.0', '-y', '5.0', '-z', '0.10',
-            '-R', '0.0', '-P', '0.0', '-Y', '0.0'])
+    # start_gazebo_spawner_cmd = Node(
+    #     package='gazebo_ros',
+    #     executable='spawn_entity.py',
+    #     output='screen',
+    #     arguments=[
+    #         '-entity', 'tb3',
+    #         '-file', sdf,
+    #         '-x', '5.0', '-y', '5.0', '-z', '0.10',
+    #         '-R', '0.0', '-P', '0.0', '-Y', '0.0'])
 
     # start the visualization
     rviz_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(nav2_bringup_dir, 'launch', 'rviz_launch.py')),
-        launch_arguments={'namespace': ''}.items())
+        # launch_arguments={'namespace': ''}.items())
+        launch_arguments={'namespace': '', 'rviz_config':
+            os.path.join(
+                get_package_share_directory("opennav_coverage_demo"),
+                "coverage_rviz.rviz",
+        )}.items())
 
     # start navigation
     bringup_cmd = IncludeLaunchDescription(
@@ -91,8 +96,8 @@ def generate_launch_description():
     ld = LaunchDescription()
     ld.add_action(start_gazebo_server_cmd)
     # ld.add_action(start_gazebo_client_cmd)
-    ld.add_action(start_robot_state_publisher_cmd)
-    ld.add_action(start_gazebo_spawner_cmd)
+    # ld.add_action(start_robot_state_publisher_cmd)
+    # ld.add_action(start_gazebo_spawner_cmd)
     ld.add_action(rviz_cmd)
     ld.add_action(bringup_cmd)
     ld.add_action(fake_localization_cmd)
